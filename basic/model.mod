@@ -7,7 +7,7 @@ param cashierLength;
 param space{ProductGroups};
 
 var lengthOfRows{Rows} >= 0;
-var lengthOfShop >= 0;
+var BuildingLength >= 0;
 var cashierInRow{Rows} binary;
 var productInRow{Rows, ProductGroups} binary;
 
@@ -18,12 +18,13 @@ s.t. OneProductInOneRow{p in ProductGroups}:
 	sum{r in Rows}productInRow[r, p] = 1;
 
 s.t. LongestRowDefined{r in Rows}:
-	lengthOfShop >= lengthOfRows[r];
+	BuildingLength >= lengthOfRows[r];
 
 s.t. CountCashiers:
 	sum{r in Rows}cashierInRow[r] = cashierCount;
 
 minimize LengthOfTheShop:
-	lengthOfShop;
-
+	BuildingLength;
+solve;
+printf "%f\n",BuildingLength;
 end;
