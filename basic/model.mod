@@ -21,3 +21,4 @@ minimize Len: BuildingLength;
 solve;
 printf "%f\n",BuildingLength;
 
+end;
