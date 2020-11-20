@@ -1,24 +1,29 @@
+set ProductGroups;
+
 param nRows;
+set Rows := 1..nRows;
 param cashierCount;
 param cashierLength;
-set ProductGroups;
 param space{ProductGroups};
 
-var assign{1..nRows,ProductGroups} binary;
-var cashAssign{1..nRows,1..cashierCount} binary;
+var lengthOfRows{Rows} >= 0;
+var lengthOfShop >= 0;
+var cashierInRow{Rows} binary;
+var productInRow{Rows, ProductGroups} binary;
 
-var BuildingLength;
+s.t. LegthCount{r in Rows}:
+	cashierInRow[r]*cashierLength + sum{p in ProductGroups}productInRow[r, p]*space[p] = lengthOfRows[r];
 
-s.t. setMaxLength{r in 1..nRows}:
-	BuildingLength >= sum{p in ProductGroups} assign[r,p]*space[p] + sum{c in 1..cashierCount}cashAssign[r,c]*cashierLength; 
-s.t. assignEveryPG{p in ProductGroups}:
-	1 = sum{r in 1..nRows} assign[r,p];
-s.t. assignEveryCashier{p in 1..cashierCount}:
-	1 = sum{r in 1..nRows} cashAssign[r,p];
+s.t. OneProductInOneRow{p in ProductGroups}:
+	sum{r in Rows}productInRow[r, p] = 1;
 
-minimize Len: BuildingLength;
+s.t. LongestRowDefined{r in Rows}:
+	lengthOfShop >= lengthOfRows[r];
 
-solve;
-printf "%f\n",BuildingLength;
+s.t. CountCashiers:
+	sum{r in Rows}cashierInRow[r] = cashierCount;
+
+minimize LengthOfTheShop:
+	lengthOfShop;
 
 end;
